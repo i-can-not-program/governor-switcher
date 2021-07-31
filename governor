@@ -1,0 +1,40 @@
+#!/bin/env bash
+if [[ $1 == get ]]; then
+	if [[ $2 == current ]] || [[ -z $2 ]]; then
+		cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+	elif [[ $2 == governors ]]; then
+		cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+	fi
+elif [[ $1 == set ]]; then
+	if [[ $2 == performance ]]; then
+		echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+	elif [[ $2 == schedutil ]]; then
+		echo schedutil | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+	elif [[ $2 == powersave ]]; then
+		echo powersave | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+	elif [[ $2 == userspace ]]; then
+		echo userspace | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+	elif [[ $2 == ondemand ]]; then
+		echo ondemand | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+	elif [[ $2 == conservative ]]; then
+		echo conservative | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+	elif [[ -z $2 ]]; then
+		echo "no governor specified (use 'governor get governors' to show governors)"
+	else
+		echo "invalid governor (use 'governor get governors' to show governors)"
+	fi
+elif [[ -z $1 ]]; then
+	echo "no operation specified (use 'help' for help)" 
+	false
+elif [[ $1 == help ]]; then
+	if [[ $2 == get ]]; then
+		echo -e "usage: governor get <option>\noptions: current, governors"
+        elif [[ $2 == set ]]; then
+		echo -e "usage: governor set <governor>\nuse 'governor get governors' to show governors"
+	else
+	echo -e "usage: governor <operation> <option/governor>\noperations: help, get, set\nuse an operation's name with help to see available options"
+	fi
+else 
+	echo "invalid operation: $1 (use 'help' for help)"
+	false
+fi
