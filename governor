@@ -6,47 +6,17 @@ if [[ $1 == get ]]; then
 		cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 	fi
 elif [[ $1 == set ]]; then
-	if [[ $2 == performance ]]; then
-		if [[ -n $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors | grep performance) ]]; then
-			echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+	function setgovernor {
+		governor=$1
+		if cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors | grep " $governor " > /dev/null; then
+			echo $governor | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+		elif [[ -z $governor ]]; then
+			echo "no governor specified (use \"governor get governors\" to show governors)"; exit 1
 		else
-			echo "invalid governor $2 (use \"governor get governors\" to show governors)"; exit 1
+			echo "invalid governor $governor (use \"governor get governors\" to show governors)"; exit 1
 		fi
-	elif [[ $2 == schedutil ]]; then
-		if [[ -n $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors | grep schedutil) ]]; then
-			echo schedutil | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
-		else
-			echo "invalid governor $2 (use \"governor get governors\" to show governors)"; exit 1
-		fi
-	elif [[ $2 == powersave ]]; then
-		if [[ -n $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors | grep powersave) ]]; then
-			echo powersave | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
-		else
-			echo "invalid governor $2 (use \"governor get governors\" to show governors)"
-		fi
-	elif [[ $2 == userspace ]]; then
-		if [[ -n $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors | grep userspace) ]]; then
-			echo userspace | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
-		else
-			echo "invalid governor $2 (use \"governor get governors\" to show governors)"; exit 1
-		fi
-	elif [[ $2 == ondemand ]]; then
-		if [[ -n $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors | grep ondemand) ]]; then
-			echo ondemand | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
-		else
-			echo "invalid governor $2 (use \"governor get governors\" to show governors)"; exit 1
-		fi
-	elif [[ $2 == conservative ]]; then
-		if [[ -n $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors | grep conservative) ]]; then
-			echo conservative | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
-		else
-			echo "invalid governor $2 (use \"governor get governors\" to show governors)"; exit 1
-		fi
-	elif [[ -z $2 ]]; then
-		echo "no governor specified (use \"governor get governors\" to show governors)"
-	else
-		echo "invalid governor $2 (use \"governor get governors\" to show governors)"
-	fi
+	}
+	setgovernor $2
 elif [[ -z $1 ]]; then
 	echo "no operation specified (use \"governor help\" for help)"; exit 1
 elif [[ $1 == help ]]; then
