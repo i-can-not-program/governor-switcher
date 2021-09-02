@@ -16,7 +16,7 @@ elif [[ $1 == set ]]; then
 			echo "invalid governor $governor (use \"governor get governors\" to show governors)"; exit 1
 		fi
 	}
-	setgovernor $2
+	setgovernor "$2"
 elif [[ -z $1 ]]; then
 	echo "no operation specified (use \"governor help\" for help)"; exit 1
 elif [[ $1 == help ]]; then
